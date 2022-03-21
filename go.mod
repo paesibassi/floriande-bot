@@ -1,5 +1,12 @@
 module gitlab.com/gruppi-preparazione/floriande-bot
 
-go 1.17
+go 1.16
 
-require gopkg.in/telebot.v3 v3.0.0
+require (
+	cloud.google.com/go/firestore v1.6.1
+	cloud.google.com/go/storage v1.21.0 // indirect
+	firebase.google.com/go v3.13.0+incompatible
+	github.com/GoogleCloudPlatform/functions-framework-go v1.5.3
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	google.golang.org/api v0.73.0
+)
