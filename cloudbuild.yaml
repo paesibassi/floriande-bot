@@ -1,0 +1,15 @@
+steps:
+  - name: golang:1.16
+    args: ['go', 'version']
+  - name: golang:1.16
+    args: ['go', 'test']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+        'functions', 'deploy', 'floriande-bot-handler',
+        '--region', 'us-east1',
+        '--allow-unauthenticated',
+        '--trigger-http',
+        '--runtime', 'go116',
+        '--entry-point', 'Handler',
+        '--memory', '128MB'
+        ]
