@@ -30,13 +30,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	update, err := bot.HandleUpdate(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Fatalln(err)
+		log.Println(err)
 		return
 	}
 
 	err = controller.HandleUpdate(update)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Fatalln(err)
+		log.Println(err)
 	}
 }
