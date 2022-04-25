@@ -27,9 +27,10 @@ type Order struct {
 	Done     bool
 }
 
-func NewOrder(customerID int64, customerName, drink string) Order {
+func NewOrder(customerID int64, customerName, drink, category string) Order {
 	t := time.Now()
 	orderID := fmt.Sprintf("#%d%s", t.Unix(), customerName)
+	cocktail := NewCocktail(drink, category)
 	return Order{
 		OrderID:   orderID,
 		Timestamp: t,
@@ -37,14 +38,14 @@ func NewOrder(customerID int64, customerName, drink string) Order {
 			CustomerID:   customerID,
 			CustomerName: customerName,
 		},
-		Cocktail: NewCocktail(drink),
+		Cocktail: cocktail,
 		Quantity: 1,
 		Done:     false,
 	}
 }
 
-func AddOrder(client *firestore.Client, customerID int64, customerName string, drink string) {
-	o := NewOrder(customerID, customerName, drink)
+func AddOrder(client *firestore.Client, customerID int64, customerName string, drink, category string) {
+	o := NewOrder(customerID, customerName, drink, category)
 	ctx := context.Background()
 	_, err := client.
 		Collection("orders").

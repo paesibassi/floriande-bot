@@ -13,8 +13,8 @@ type Category struct {
 
 func NewCategory(name string) Category {
 	return Category{
-		name,
-		fmt.Sprintf("1%s", name),
+		CategoryName: name,
+		CategoryCode: fmt.Sprintf("1%s", name),
 	}
 }
 
@@ -24,11 +24,11 @@ type Cocktail struct {
 	Category
 }
 
-func NewCocktail(name string) Cocktail {
+func NewCocktail(name, categoryName string) Cocktail {
 	return Cocktail{
 		CocktailName: name,
 		CocktailCode: fmt.Sprintf("2%s", name),
-		Category:     Category{}, // TODO fill category
+		Category:     NewCategory(categoryName),
 	}
 }
 
@@ -59,7 +59,7 @@ func newCategoriesKeyboard(categories []Category) tgbotapi.InlineKeyboardMarkup 
 func newCocktailsKeyboard(cocktails []Cocktail) tgbotapi.InlineKeyboardMarkup {
 	buttons := make([]tgbotapi.InlineKeyboardButton, len(cocktails))
 	for i, d := range cocktails {
-		buttons[i] = tgbotapi.NewInlineKeyboardButtonData(d.CocktailName, d.CocktailCode)
+		buttons[i] = tgbotapi.NewInlineKeyboardButtonData(d.CocktailName, d.CocktailCode+d.CategoryCode)
 	}
 	return newDrinksKeyboard(buttons)
 }
