@@ -9,18 +9,32 @@ const (
 	ConnoisseurMenu = "AgACAgIAAxkBAAIDzmJBsV_nyDgddGRDu65yjV9S9djNAAJstzEbEpM5SR2KRHwgCPQaAQADAgADcwADIwQ"
 )
 
-var menu = map[string][]string{
+type Menu map[string][]string
+
+var menu = Menu{
 	"Gin":   {"Americano", "Dry Martini", "Negroni"},
 	"Rum":   {"Daiquiri", "Mojito", "Cuba Libre"},
 	"Vodka": {"Cosmopolitan", "Vodka Martini", "Moscow Mule"},
 }
 
-func NewCocktailKeyboards(menu map[string][]string) (
+func NewMenuList(m Menu) map[string]string {
+	drinksMap := make(map[string]string)
+	for category, drinks := range m {
+		for _, d := range drinks {
+			drinksMap[d] = category
+		}
+	}
+	return drinksMap
+}
+
+var AllCocktails map[string]string = NewMenuList(menu)
+
+func NewCocktailKeyboards(m Menu) (
 	categoriesKeyboard tgbotapi.InlineKeyboardMarkup, cocktailkeyboards MenuKeyboards,
 ) {
 	var categories []Category
-	cocktailkeyboards = make(MenuKeyboards, len(menu))
-	for categoryName, cocktailNames := range menu {
+	cocktailkeyboards = make(MenuKeyboards, len(m))
+	for categoryName, cocktailNames := range m {
 		category := NewCategory(categoryName)
 		cocktails := make([]Cocktail, len(cocktailNames))
 		for i, name := range cocktailNames {
