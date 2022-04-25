@@ -24,7 +24,7 @@ func NewCocktailKeyboards(menu map[string][]string) (
 		category := NewCategory(categoryName)
 		cocktails := make([]Cocktail, len(cocktailNames))
 		for i, name := range cocktailNames {
-			cocktails[i] = NewCocktail(name)
+			cocktails[i] = NewCocktail(name, categoryName)
 		}
 		categories = append(categories, category)
 		cocktailkeyboards[category.CategoryCode] = newCocktailsKeyboard(cocktails)

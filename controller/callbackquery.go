@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"gitlab.com/gruppi-preparazione/floriande-bot/store"
@@ -10,7 +11,6 @@ import (
 
 func handleCallBackQuery(update *tgbotapi.Update) error {
 	var err error
-	fmt.Println("Callbackdata: ", update.CallbackQuery.Data)
 	callback := tgbotapi.NewCallback(update.CallbackQuery.ID, fmt.Sprintf("You selected %s", update.CallbackQuery.Data[1:]))
 	_, err = bot.Request(callback)
 	if err != nil {
@@ -57,19 +57,27 @@ func handleCategorySelection(update *tgbotapi.Update) error {
 }
 
 func handleOrder(update *tgbotapi.Update) error {
-	store.AddOrder(client, update.CallbackQuery.From.ID, update.CallbackQuery.From.FirstName, update.CallbackQuery.Data[1:])
-	confirm := fmt.Sprintf("%v %s just ordered a %s", bell, update.CallbackQuery.From.FirstName, update.CallbackQuery.Data[1:])
+	drink, category := splitCocktailString(update.CallbackQuery.Data)
+	store.AddOrder(client, update.CallbackQuery.From.ID, update.CallbackQuery.From.FirstName, drink, category)
+	confirm := fmt.Sprintf("%v %s just ordered a %s", bell, update.CallbackQuery.From.FirstName, drink)
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
 	}
 	removeKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,
 		update.CallbackQuery.Message.MessageID,
-		fmt.Sprintf("A %s is coming soon! %v", update.CallbackQuery.Data[1:], cocktailGlass),
+		fmt.Sprintf("A %s is coming soon! %v", drink, cocktailGlass),
 		store.EmptyInlineKeyboard,
 	)
 	_, err := bot.Request(removeKeyboard)
 	return err
+}
+
+// Splits cocktail order callbackdata string like "2Cocktail Name1Category Name"
+func splitCocktailString(code string) (string, string) {
+	chunks := strings.Split(code, "1")
+	drink, category := chunks[0][1:], chunks[1]
+	return drink, category
 }
 
 func handleCloseOrder(update *tgbotapi.Update) error {
