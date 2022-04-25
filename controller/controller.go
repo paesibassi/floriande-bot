@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 
 	"cloud.google.com/go/firestore"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -23,26 +24,6 @@ const (
 
 	barmanID = 20137373 // admin chat_id
 )
-
-var welcomeText = fmt.Sprintf(`Welcome by Floriande Lounge bar %v\.
-
-Have you already reserved a spot for an upcoming event? You can do so with the `+
-	"*`/book`*"+` command\.
-Please use the `+"*`/menu`*"+` command to download our latest drink selection\. %v
-You can order a drink from here using the `+"`/drink`"+` command, and check if you have `+
-	`any order waiting to be prepared and served with the `+"`/orders`"+` command\. %v
-Please let [us](tg://user?id=%d) know if you have suggestions for improvement\.
-We hope you enjoy you stay\. %v
-
-What would you like to drink today? %v`,
-	clinkingGlasses, tumblerGlass, cocktailGlass, barmanID, sun, personTipping)
-
-var helpText = "You can use the command `/book` to reserve for an event, " +
-	"`/menu` to download the digital version of our cocktail menu, " +
-	"`/drink` to order a cocktail (you will be guided through the process), " +
-	"`/orders`" + ` to see the cocktail(s) you have ordered and are being mixed.
-
-Finally, the commands ` + "`/list` and `/serve`, are reserved for the barman)."
 
 func Setup(b *tgbotapi.BotAPI, cl *firestore.Client) {
 	bot = b
@@ -73,7 +54,7 @@ func HandleUpdate(update *tgbotapi.Update) error {
 		msg := handleEditMessage(update)
 		_, err = bot.Send(msg)
 	default:
-		err = fmt.Errorf("update type not handled: %+v", update)
+		log.Printf("update type not handled: %+v\n", update)
 	}
 	return err
 }

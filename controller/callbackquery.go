@@ -23,7 +23,7 @@ func handleCallBackQuery(update *tgbotapi.Update) error {
 	case "1":
 		err = handleCategorySelection(update)
 	case "2":
-		err = handleOrder(update)
+		err = handleOrderCallback(update)
 	default:
 		err = handleCloseOrder(update)
 	}
@@ -56,7 +56,7 @@ func handleCategorySelection(update *tgbotapi.Update) error {
 	return err
 }
 
-func handleOrder(update *tgbotapi.Update) error {
+func handleOrderCallback(update *tgbotapi.Update) error {
 	drink, category := splitCocktailString(update.CallbackQuery.Data)
 	store.AddOrder(client, update.CallbackQuery.From.ID, update.CallbackQuery.From.FirstName, drink, category)
 	confirm := fmt.Sprintf("%v %s just ordered a %s", bell, update.CallbackQuery.From.FirstName, drink)
