@@ -38,31 +38,38 @@ func HandleUpdate(update *tgbotapi.Update) error {
 	var err error
 	switch {
 	case update.Message != nil:
-		var msg tgbotapi.MessageConfig
 		if update.Message.IsCommand() {
-			msg = handleCommands(update)
+			err = handleCommands(update)
 		} else {
-			msg = handlePlainMessage(update)
+			err = handlePlainMessage(update)
 		}
-		_, err = bot.Send(msg)
 	case update.CallbackQuery != nil:
 		handleCallBackQuery(update)
 	case update.MyChatMember != nil:
-		msg := handleChatMemberUpdate(update)
-		_, err = bot.Send(msg)
+		err = handleChatMemberUpdate(update)
 	case update.EditedMessage != nil:
-		msg := handleEditMessage(update)
-		_, err = bot.Send(msg)
+		err = handleEditMessage(update)
 	default:
 		log.Printf("update type not handled: %+v\n", update)
 	}
 	return err
 }
 
-func handleChatMemberUpdate(update *tgbotapi.Update) tgbotapi.MessageConfig {
-	return tgbotapi.NewMessage(barmanID, fmt.Sprintf("Bot status updated: %v", update.MyChatMember))
+func handleChatMemberUpdate(update *tgbotapi.Update) error {
+	message := fmt.Sprintf(
+		"Bot just joined or left the group '%s', added or removed by [%s](tg://user?id=%d)",
+		update.MyChatMember.Chat.Title,
+		update.MyChatMember.From.FirstName,
+		update.MyChatMember.From.ID,
+	)
+	msg := tgbotapi.NewMessage(barmanID, message)
+	msg.ParseMode = "MarkdownV2"
+	_, err := bot.Send(msg)
+	return err
 }
 
-func handleEditMessage(update *tgbotapi.Update) tgbotapi.MessageConfig {
-	return tgbotapi.NewMessage(barmanID, fmt.Sprintf("%v edited: [%v]", update.EditedMessage.From.FirstName, update.EditedMessage.Text))
+func handleEditMessage(update *tgbotapi.Update) error {
+	msg := tgbotapi.NewMessage(barmanID, fmt.Sprintf("%v edited: [%v]", update.EditedMessage.From.FirstName, update.EditedMessage.Text))
+	_, err := bot.Send(msg)
+	return err
 }

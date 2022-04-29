@@ -8,14 +8,34 @@ import (
 	"gitlab.com/gruppi-preparazione/floriande-bot/store"
 )
 
-func handlePlainMessage(update *tgbotapi.Update) tgbotapi.MessageConfig {
-	if id, ok := store.Events[update.Message.Text]; ok {
-		return handleBook(update, id)
-	} else if category, ok := store.AllCocktails[update.Message.Text]; ok {
-		return handleOrderPlainMessage(update, category)
-	} else {
-		return handleDidntUnderstand(update)
+type PlainMsgInGroupError struct {
+	message string
+}
+
+func newPlainMsgInGroup(message string) *PlainMsgInGroupError {
+	return &PlainMsgInGroupError{
+		message: message,
 	}
+}
+
+func (e *PlainMsgInGroupError) Error() string {
+	return e.message
+}
+
+func handlePlainMessage(update *tgbotapi.Update) error {
+	var msg tgbotapi.MessageConfig
+	if update.Message.Chat.Type != "private" {
+		return newPlainMsgInGroup("ignore plain messages sent in groups")
+	}
+	if id, ok := store.Events[update.Message.Text]; ok {
+		msg = handleBook(update, id)
+	} else if category, ok := store.AllCocktails[update.Message.Text]; ok {
+		msg = handleOrderPlainMessage(update, category)
+	} else {
+		msg = handleDidntUnderstand(update)
+	}
+	_, err := bot.Send(msg)
+	return err
 }
 
 func handleOrderPlainMessage(update *tgbotapi.Update, category string) tgbotapi.MessageConfig {

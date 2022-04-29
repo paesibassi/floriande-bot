@@ -36,7 +36,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	err = controller.HandleUpdate(update)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Println(err)
+		switch err.(type) {
+		case *controller.PlainMsgInGroupError:
+			log.Println(err.Error())
+		default:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println(err)
+		}
 	}
 }
