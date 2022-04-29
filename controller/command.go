@@ -28,7 +28,8 @@ var helpText = "You can use the command *`/book`* to reserve for an event, " +
 	"*`/orders`*" + ` to see the cocktail\(s\) you have ordered and are being mixed\.
 Finally, the commands ` + "*`/list`* and *`/serve`*," + ` are reserved for the barman\.`
 
-func handleCommands(update *tgbotapi.Update) tgbotapi.MessageConfig {
+func handleCommands(update *tgbotapi.Update) error {
+	var isBarman bool
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 	switch update.Message.Command() {
 	case "start":
@@ -56,15 +57,15 @@ func handleCommands(update *tgbotapi.Update) tgbotapi.MessageConfig {
 		orders := store.UserOrders(client, update.Message.From.ID).String()
 		msg.Text = fmt.Sprintf("Your order(s):\n%s", orders)
 	case "list":
-		if notBarman, notBarmanMsg := checkIfBarman(update, msg); notBarman {
-			return notBarmanMsg
+		if isBarman, msg = checkIfBarman(update, msg); !isBarman {
+			break
 		}
 		orders := store.AllOrders(client).String()
 		msg.ParseMode = "MarkdownV2"
 		msg.Text = fmt.Sprintf("Outstanding orders:\n"+"```\n"+"%s"+"```", orders)
 	case "serve":
-		if notBarman, notBarmanMsg := checkIfBarman(update, msg); notBarman {
-			return notBarmanMsg
+		if isBarman, msg = checkIfBarman(update, msg); !isBarman {
+			break
 		}
 		orders := store.AllOrders(client)
 		if len(orders) > 0 {
@@ -78,7 +79,8 @@ func handleCommands(update *tgbotapi.Update) tgbotapi.MessageConfig {
 		msg.ReplyToMessageID = update.Message.MessageID
 		msg.Text = "I don't know that command"
 	}
-	return msg
+	_, err := bot.Send(msg)
+	return err
 }
 
 func checkIfBarman(update *tgbotapi.Update, msg tgbotapi.MessageConfig) (bool, tgbotapi.MessageConfig) {
