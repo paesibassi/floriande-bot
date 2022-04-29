@@ -87,7 +87,7 @@ func checkIfBarman(update *tgbotapi.Update, msg tgbotapi.MessageConfig) (bool, t
 	if update.Message.From.ID != barmanID {
 		msg.ParseMode = "MarkdownV2"
 		msg.Text = fmt.Sprintf("The `%v` command is reserved for the barman", update.Message.Text)
-		return true, msg
+		return false, msg
 	}
-	return false, tgbotapi.MessageConfig{}
+	return true, msg
 }
