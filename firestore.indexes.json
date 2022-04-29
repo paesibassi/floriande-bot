@@ -1,0 +1,51 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "CustomerID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Done",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Timestamp",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "CustomerID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Timestamp",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Done",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Timestamp",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
