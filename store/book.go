@@ -36,7 +36,7 @@ type Booking struct {
 
 func NewBooking(eventID int, customerID int64, customerName string) Booking {
 	t := time.Now()
-	bookingID := fmt.Sprintf("#%d[%d]%s", t.Unix(), eventID, customerName)
+	bookingID := fmt.Sprintf("#%d%s", eventID, customerName)
 	return Booking{
 		BookingID: bookingID,
 		Timestamp: t,
