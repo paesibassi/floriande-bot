@@ -59,12 +59,12 @@ func handleBook(update *tgbotapi.Update, eventID int) tgbotapi.MessageConfig {
 		log.Fatal(err)
 	}
 	msgText := mss[bookConfirmation][userLanguage(update.Message.From.LanguageCode)]
-	return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, update.Message.From.FirstName))
+	return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, eventID, update.Message.From.FirstName))
 }
 
 func handleDontUnderstand(update *tgbotapi.Update) tgbotapi.MessageConfig {
 	msgText := mss[dontUnderstand][userLanguage(update.Message.From.LanguageCode)]
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, update.Message.Text, barmanID))
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, barmanID))
 	msg.ParseMode = "MarkdownV2"
 	return msg
 }

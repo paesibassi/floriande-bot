@@ -40,18 +40,18 @@ type messagesMap map[multiLanguageMessage][2]string
 
 var mss messagesMap = messagesMap{
 	dontUnderstand: {
-		`I don't understand: '%s'\.
+		`I didn't quite get that\.
 Please try the command ` + "`/drink`" + ` to get guided help while ordering\.
 Otherwise, make sure to type the exact name of the drink \(including capitals\)\.
 Get in touch with [us](tg://user?id=%d) if anything doesn't work\!`,
-		`Non capisco: '%s'\.
+		`Non credo di aver capito\.
 Prova il comando ` + "`/drink`" + ` per ricevere aiuto guidato per fare un ordine\.
 Altrimenti, presta attenzione ad inserire correttamente il nome del drink \(incluse maiuscole\)\.
 [Contattaci](tg://user?id=%d) direttamente se qualcosa non funziona\!`,
 	},
 	bookConfirmation: {
-		"Great! We reserved a spot for you %s!",
-		"Ottimo! Abbiamo riservato un posto per te %s!",
+		"Great! We reserved a spot for [%v] for you %s!",
+		"Ottimo! Abbiamo riservato un posto per [%v] per te %s!",
 	},
 	orderConfirmation: {
 		"A %s is coming soon! %v",
