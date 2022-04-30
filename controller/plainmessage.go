@@ -12,7 +12,7 @@ type PlainMsgInGroupError struct {
 	message string
 }
 
-func newPlainMsgInGroup(message string) *PlainMsgInGroupError {
+func newPlainMsgInGroupError(message string) *PlainMsgInGroupError {
 	return &PlainMsgInGroupError{
 		message: message,
 	}
@@ -25,14 +25,14 @@ func (e *PlainMsgInGroupError) Error() string {
 func handlePlainMessage(update *tgbotapi.Update) error {
 	var msg tgbotapi.MessageConfig
 	if update.Message.Chat.Type != "private" {
-		return newPlainMsgInGroup("ignore plain messages sent in groups")
+		return newPlainMsgInGroupError("ignore plain messages sent in groups")
 	}
 	if id, ok := store.Events[update.Message.Text]; ok {
 		msg = handleBook(update, id)
 	} else if category, ok := store.AllCocktails[update.Message.Text]; ok {
 		msg = handleOrderPlainMessage(update, category)
 	} else {
-		msg = handleDidntUnderstand(update)
+		msg = handleDontUnderstand(update)
 	}
 	_, err := bot.Send(msg)
 	return err
@@ -45,9 +45,10 @@ func handleOrderPlainMessage(update *tgbotapi.Update, category string) tgbotapi.
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
 	}
+	msgText := mss[orderConfirmation][userLanguage(update.Message.From.LanguageCode)]
 	return tgbotapi.NewMessage(
 		update.Message.From.ID,
-		fmt.Sprintf("A %s is coming soon! %v", drink, cocktailGlass),
+		fmt.Sprintf(msgText, drink, cocktailGlass),
 	)
 }
 
@@ -57,16 +58,13 @@ func handleBook(update *tgbotapi.Update, eventID int) tgbotapi.MessageConfig {
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
 	}
-	return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Great! We reserved a spot for you %s!", update.Message.From.FirstName))
+	msgText := mss[bookConfirmation][userLanguage(update.Message.From.LanguageCode)]
+	return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, update.Message.From.FirstName))
 }
 
-var didntUnderstandMsg = `I didn't understand: '%s'\.
-Please try the guided order command ` + "`/drink`" + ` to get help while ordering\.
-Otherwise, make sure to type the exact name of the drink\.
-Get in touch with [us](tg://user?id=%d) if anything doesn't work\!`
-
-func handleDidntUnderstand(update *tgbotapi.Update) tgbotapi.MessageConfig {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(didntUnderstandMsg, update.Message.Text, barmanID))
+func handleDontUnderstand(update *tgbotapi.Update) tgbotapi.MessageConfig {
+	msgText := mss[dontUnderstand][userLanguage(update.Message.From.LanguageCode)]
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, update.Message.Text, barmanID))
 	msg.ParseMode = "MarkdownV2"
 	return msg
 }
