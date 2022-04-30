@@ -11,7 +11,8 @@ import (
 
 func handleCallBackQuery(update *tgbotapi.Update) error {
 	var err error
-	callback := tgbotapi.NewCallback(update.CallbackQuery.ID, fmt.Sprintf("You selected %s", update.CallbackQuery.Data[1:]))
+	msgText := mss[youChose][userLanguage(update.CallbackQuery.Message.From.LanguageCode)]
+	callback := tgbotapi.NewCallback(update.CallbackQuery.ID, fmt.Sprintf(msgText, update.CallbackQuery.Data[1:]))
 	_, err = bot.Request(callback)
 	if err != nil {
 		return err
@@ -38,7 +39,7 @@ func handleCancel(update *tgbotapi.Update) error {
 	removeKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,
 		update.CallbackQuery.Message.MessageID,
-		"You canceled your order",
+		mss[youCanceled][userLanguage(update.CallbackQuery.From.LanguageCode)],
 		store.EmptyInlineKeyboard,
 	)
 	_, err := bot.Request(removeKeyboard)
@@ -49,7 +50,7 @@ func handleCategorySelection(update *tgbotapi.Update) error {
 	replaceKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,
 		update.CallbackQuery.Message.MessageID,
-		"2. good choice! Now choose your favorite drink in this category",
+		mss[chooseDrinkInCategory][userLanguage(update.CallbackQuery.From.LanguageCode)],
 		store.CocktailKeyboards[update.CallbackQuery.Data],
 	)
 	_, err := bot.Request(replaceKeyboard)
@@ -66,7 +67,7 @@ func handleOrderCallback(update *tgbotapi.Update) error {
 	removeKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,
 		update.CallbackQuery.Message.MessageID,
-		fmt.Sprintf("A %s is coming soon! %v", drink, cocktailGlass),
+		fmt.Sprintf(mss[orderConfirmation][userLanguage(update.CallbackQuery.From.LanguageCode)], drink, cocktailGlass),
 		store.EmptyInlineKeyboard,
 	)
 	_, err := bot.Request(removeKeyboard)
@@ -89,7 +90,8 @@ func handleCloseOrder(update *tgbotapi.Update) error {
 	if err := store.CloseOrder(client, orderID); err != nil {
 		log.Fatal(fmt.Errorf("could not close order: %v", err))
 	}
-	confirm := fmt.Sprintf("Your order %s is ready! Enjoy!", orderPtr.CocktailName)
+	msgText := mss[orderReady][userLanguage(update.CallbackQuery.Message.From.LanguageCode)]
+	confirm := fmt.Sprintf(msgText, orderPtr.CocktailName)
 	if _, err := bot.Send(tgbotapi.NewMessage(orderPtr.CustomerID, confirm)); err != nil {
 		log.Fatal(err)
 	}
