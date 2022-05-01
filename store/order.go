@@ -157,7 +157,7 @@ func NewServeOrdersKeyboard(orders Orders) tgbotapi.InlineKeyboardMarkup {
 	nButtons := len(orders)
 	buttons := make([]tgbotapi.InlineKeyboardButton, nButtons)
 	for i, o := range orders {
-		text := fmt.Sprintf("%5.5s > %5.3s @ %s", o.CocktailName, o.CustomerName, o.Timestamp.Format("15:04"))
+		text := fmt.Sprintf("%2.1d %3.3s > %5.3s", i, o.CocktailName, o.CustomerName)
 		buttons[i] = tgbotapi.NewInlineKeyboardButtonData(text, o.OrderID)
 	}
 	var rows [][]tgbotapi.InlineKeyboardButton
@@ -168,7 +168,5 @@ func NewServeOrdersKeyboard(orders Orders) tgbotapi.InlineKeyboardMarkup {
 		}
 		rows = append(rows, tgbotapi.NewInlineKeyboardRow(buttons[i:limit]...))
 	}
-	return tgbotapi.NewInlineKeyboardMarkup(
-		rows...,
-	)
+	return tgbotapi.NewInlineKeyboardMarkup(rows...)
 }

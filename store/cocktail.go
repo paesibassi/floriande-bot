@@ -39,13 +39,22 @@ var EmptyInlineKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 )
 
 func newDrinksKeyboard(buttons []tgbotapi.InlineKeyboardButton) tgbotapi.InlineKeyboardMarkup {
-	keyboard := tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(buttons...),
+	const buttonsPerRow = 2
+	nButtons := len(buttons)
+	var rows [][]tgbotapi.InlineKeyboardButton
+	for i := 0; i < nButtons; i += buttonsPerRow {
+		limit := i + buttonsPerRow
+		if limit > nButtons {
+			limit = nButtons
+		}
+		rows = append(rows, tgbotapi.NewInlineKeyboardRow(buttons[i:limit]...))
+	}
+	rows = append(rows,
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Cancel", "0Cancel"),
-		),
-	)
-	return keyboard
+		))
+
+	return tgbotapi.NewInlineKeyboardMarkup(rows...)
 }
 
 func newCategoriesKeyboard(categories []Category) tgbotapi.InlineKeyboardMarkup {

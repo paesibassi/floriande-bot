@@ -12,9 +12,42 @@ const (
 type Menu map[string][]string
 
 var menu = Menu{
-	"Gin":   {"Americano", "Dry Martini", "Negroni"},
-	"Rum":   {"Daiquiri", "Mojito", "Cuba Libre"},
-	"Vodka": {"Cosmopolitan", "Vodka Martini", "Moscow Mule"},
+	"Entree": {
+		"Caipiroska Fragola",
+		"Caipiroska Mango",
+		"Mojito",
+		"Virgin Mojito",
+		"Spritz Aperol",
+		"Spritz Campari",
+	},
+	// "Fresh&Easy": {
+	// 	"Americano",
+	// 	"Bay Breeze",
+	// 	"Caipiroska Fragola",
+	// 	"Caipiroska Mango",
+	// 	"Cosmopolitan",
+	// 	"Cuba Libre",
+	// 	"Dark & Stormy",
+	// 	"Gin Tonic",
+	// 	"Margarita",
+	// 	"Virgin Margarita",
+	// 	"Mojito",
+	// 	"Virgin Mojito",
+	// 	"Moscow Mule",
+	// 	"Spritz Aperol",
+	// 	"Spritz Campari",
+	// 	"Tequila Sunrise",
+	// },
+	// "Connoisseur": {
+	// 	"Daiquiri",
+	// 	"Dry Martini",
+	// 	"God Father",
+	// 	"Long Island Ice Tea",
+	// 	"Manhattan",
+	// 	"Negroni",
+	// 	"Old Fashioned",
+	// 	"Sex on the Beach",
+	// },
 }
 
 func NewMenuList(m Menu) map[string]string {
