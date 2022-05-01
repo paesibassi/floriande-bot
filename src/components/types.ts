@@ -1,9 +1,11 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Booking {
     BookingID: string;
     CustomerID: number;
     CustomerName: string;
     EventID: number;
-    Timestamp: Date;
+    Timestamp: Timestamp;
 }
 
 export interface Order {
@@ -16,5 +18,5 @@ export interface Order {
     Done: boolean;
     OrderID: string;
     Quantity: number;
-    Timestamp: Date;
+    Timestamp: Timestamp;
 }
