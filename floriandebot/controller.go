@@ -1,8 +1,10 @@
-package controller
+package floriandebot
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"cloud.google.com/go/firestore"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -71,5 +73,23 @@ func handleChatMemberUpdate(update *tgbotapi.Update) error {
 func handleEditMessage(update *tgbotapi.Update) error {
 	msg := tgbotapi.NewMessage(barmanID, fmt.Sprintf("%v edited: [%v]", update.EditedMessage.From.FirstName, update.EditedMessage.Text))
 	_, err := bot.Send(msg)
+	return err
+}
+
+type payload struct {
+	Command string `json:"command"`
+	OrderID string `json:"orderID"`
+}
+
+func HandleAPICall(w http.ResponseWriter, r *http.Request) error {
+	var p payload
+	err := json.NewDecoder(r.Body).Decode(&p)
+	if err != nil {
+		return err
+	}
+	switch p.Command {
+	case "CloseOrder":
+		err = closeOrder(p.OrderID)
+	}
 	return err
 }

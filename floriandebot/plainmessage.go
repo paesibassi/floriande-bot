@@ -1,4 +1,4 @@
-package controller
+package floriandebot
 
 import (
 	"fmt"
@@ -40,7 +40,12 @@ func handlePlainMessage(update *tgbotapi.Update) error {
 
 func handleOrderPlainMessage(update *tgbotapi.Update, category string) tgbotapi.MessageConfig {
 	drink := update.Message.Text
-	store.AddOrder(client, update.Message.From.ID, update.Message.From.FirstName, drink, category)
+	store.AddOrder(client,
+		update.Message.From.ID,
+		update.Message.From.FirstName,
+		update.Message.From.LanguageCode, drink,
+		category,
+	)
 	confirm := fmt.Sprintf("%v %s just ordered a %s", bell, update.Message.From.FirstName, drink)
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
