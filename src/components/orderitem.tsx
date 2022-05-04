@@ -13,7 +13,7 @@ const OrderItem: FC<Props> = (props: Props) => {
     const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
     return (
         <li className={`list-group-item border-2 rounded-3 p-1 ${order.Done ? "bg-secondary bg-gradient" : ""}`}>
-            <strong>{order.CocktailName}</strong> &gt; {order.CustomerName} @ <div className="d-none d-lg-inline">{timeString}</div><br/>
+            <strong>{order.CocktailName}</strong> &gt; {order.CustomerName} <div className="d-none d-md-inline">@ {timeString}</div><br/>
             <small>{order.OrderID}</small>
             <div className="position-absolute top-50 end-0 translate-middle-y">
                 {handleServe &&

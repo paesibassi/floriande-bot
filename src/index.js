@@ -8,6 +8,7 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import './index.css';
 import App from './App';
 import Orders from './routes/orders';
+import Batches from "./routes/batches";
 import Bookings from "./routes/bookings";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -17,6 +18,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Orders />} />
+          <Route path="batches" element={<Batches />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="*" element={<p className='p-3'>There's nothing here!</p>} />
         </Route>
