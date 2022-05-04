@@ -23,3 +23,17 @@
 *.test
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Local test utilities
+cmd/
+
+# UI application and dependencies
+firebase*
+firestore*
+.env*
+build/
+node_modules/
+public/
+src/
+package*.json
+tsconfig.json

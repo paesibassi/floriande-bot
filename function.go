@@ -1,31 +1,42 @@
-package bot
+package functions
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"gitlab.com/gruppi-preparazione/floriande-bot/controller"
+	"gitlab.com/gruppi-preparazione/floriande-bot/floriandebot"
 	"gitlab.com/gruppi-preparazione/floriande-bot/store"
 )
 
 // this init() is called when testing locally with functions-framework-go package
 func init() {
-	functions.HTTP("Handler", Handler)
+	functions.HTTP("BotHandler", BotHandler)
+	functions.HTTP("APIHandler", APIHandler)
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func botSetup() (*tgbotapi.BotAPI, error) {
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
+	if err != nil {
+		return nil, err
+	}
+	bot.Debug = true
+	return bot, nil
+}
+
+// Entry point for a Telegram message update
+func BotHandler(w http.ResponseWriter, r *http.Request) {
+	bot, err := botSetup()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Panicln(err)
 	}
-	bot.Debug = true
 
-	controller.Setup(bot, store.SetupFirestore())
-	defer controller.CloseDB()
+	floriandebot.Setup(bot, store.SetupFirestore())
+	defer floriandebot.CloseDB()
 
 	update, err := bot.HandleUpdate(r)
 	if err != nil {
@@ -34,14 +45,32 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = controller.HandleUpdate(update)
+	err = floriandebot.HandleUpdate(update)
 	if err != nil {
 		switch err.(type) {
-		case *controller.PlainMsgInGroupError:
+		case *floriandebot.PlainMsgInGroupError:
 			log.Println(err.Error())
 		default:
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			log.Println(err)
 		}
+	}
+}
+
+// Entry point for a call to the API
+func APIHandler(w http.ResponseWriter, r *http.Request) {
+	bot, err := botSetup()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Panicln(err)
+	}
+
+	floriandebot.Setup(bot, store.SetupFirestore())
+	defer floriandebot.CloseDB()
+
+	err = floriandebot.HandleAPICall(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Fatal(fmt.Errorf("could not get handle API call: %v", err))
 	}
 }

@@ -1,4 +1,4 @@
-package controller
+package floriandebot
 
 import (
 	"fmt"
@@ -59,7 +59,13 @@ func handleCategorySelection(update *tgbotapi.Update) error {
 
 func handleOrderCallback(update *tgbotapi.Update) error {
 	drink, category := splitCocktailString(update.CallbackQuery.Data)
-	store.AddOrder(client, update.CallbackQuery.From.ID, update.CallbackQuery.From.FirstName, drink, category)
+	store.AddOrder(client,
+		update.CallbackQuery.From.ID,
+		update.CallbackQuery.From.FirstName,
+		update.CallbackQuery.From.LanguageCode,
+		drink,
+		category,
+	)
 	confirm := fmt.Sprintf("%v %s just ordered a %s", bell, update.CallbackQuery.From.FirstName, drink)
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
@@ -83,17 +89,9 @@ func splitCocktailString(code string) (string, string) {
 
 func handleCloseOrder(update *tgbotapi.Update) error {
 	orderID := update.CallbackQuery.Data
-	orderPtr, err := store.OrderDetails(client, orderID)
+	err := closeOrder(orderID)
 	if err != nil {
-		log.Fatal(fmt.Errorf("could not get order detail: %v", err))
-	}
-	if err := store.CloseOrder(client, orderID); err != nil {
-		log.Fatal(fmt.Errorf("could not close order: %v", err))
-	}
-	msgText := mss[orderReady][userLanguage(update.CallbackQuery.Message.From.LanguageCode)]
-	confirm := fmt.Sprintf(msgText, orderPtr.CocktailName)
-	if _, err := bot.Send(tgbotapi.NewMessage(orderPtr.CustomerID, confirm)); err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("could not handle close order: %v", err))
 	}
 	removeKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,

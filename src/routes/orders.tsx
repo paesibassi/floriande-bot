@@ -1,30 +1,28 @@
 import React, { FC, useEffect, useState } from "react";
-import { collection, deleteDoc, doc, getFirestore, onSnapshot, orderBy, query, Timestamp, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getFirestore, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
 import OrderItem from "../components/orderitem";
 import { Order } from "../components/types";
 
 const db = getFirestore();
-
-const initialOrders = [
-  {
-    OrderID: "#1649442240Paolo",
-    CustomerName: "Paolo", CustomerID: 0,
-    Done: false,
-    CategoryCode: "1Gin", CategoryName: "Gin", CocktailCode: "Dry Martini", CocktailName: "Dry Martini",
-    Quantity: 1, Timestamp: Timestamp.now(),
-  },
-  {
-    OrderID: "#1650992794Federico",
-    CustomerName: "Federico", CustomerID: 0,
-    Done: true,
-    CategoryCode: "1Gin", CategoryName: "Gin", CocktailCode: "2Negroni", CocktailName: "Negroni",
-    Quantity: 1, Timestamp: Timestamp.now(),
-  },
-];
+const floriandeAPI = process.env.REACT_APP_APIENDPOINT;
 
 async function handleServe(OrderID: string) {
-  const orderRef = doc(db, "orders", OrderID);
-  await updateDoc(orderRef, { Done: true });
+  const command = { "command": "CloseOrder", "orderID": OrderID };
+  if (floriandeAPI === undefined) { 
+    console.error("Could not get the API endpoint address from env")
+    return
+  }
+  const response = await fetch(floriandeAPI, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(command),
+  });
+  if (!response.ok && response.status !== 0) {
+    console.error(`An error has occured: ${response.status}`)
+  }
 }
 
 async function handleDelete(OrderID: string) {
@@ -33,7 +31,7 @@ async function handleDelete(OrderID: string) {
 }
 
 const Orders: FC = () => {
-  const [orders, setOrders] = useState(initialOrders);
+  const [orders, setOrders] = useState([] as Order[]);
   const outstandingOrders = orders.filter(o => o.Done === false)
   const completedOrders = orders.filter(o => o.Done === true)
   const outstanding = outstandingOrders.map(

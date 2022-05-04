@@ -1,4 +1,4 @@
-package controller
+package floriandebot
 
 import (
 	"fmt"

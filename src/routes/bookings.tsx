@@ -1,26 +1,17 @@
 import React, { FC, useEffect, useState } from "react";
-import { collection, getDocs, getFirestore, query, Timestamp, where } from "firebase/firestore";
+import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
 import EventDropdown from "../components/eventdropdown";
 import BookingItem from "../components/bookingitem";
 import { Booking } from "../components/types";
 
 const db = getFirestore();
 
-const initialEvent = 20220506;
-const initialGuests = [
-  {
-    BookingID: "#1651000440[20220506]Stefano",
-    CustomerID: 0,
-    CustomerName: "Stefano",
-    EventID: 20220506,
-    Timestamp: Timestamp.now(),
-  }
-];
+const defaultEvent = 20220506;
 
 const Bookings: FC = () => {
-  const [event, setEvent] = useState(initialEvent);
-  const [guests, setGuests] = useState(initialGuests);
-  const bookedGuests = guests.map(
+  const [event, setEvent] = useState(defaultEvent);
+  const [bookings, setBookings] = useState([] as Booking[]);
+  const bookingItems = bookings.map(
     b => <BookingItem
       key={b.BookingID}
       booking={b}
@@ -28,14 +19,14 @@ const Bookings: FC = () => {
   );
 
   useEffect(() => {
-    const getGuests = async () => {
+    const getBookings = async () => {
       const itemsColRef = query(collection(db, 'bookings'), where("EventID", "==", event));
       const listRef = await getDocs(itemsColRef);
       const list = listRef.docs;
       const g = list.map(bh => bh.data() as Booking);
-      setGuests(g);
+      setBookings(g);
     }
-    getGuests();
+    getBookings();
   }, [event]);
 
   const handleSelectEvent = (event: number) => {
@@ -44,13 +35,13 @@ const Bookings: FC = () => {
 
   return (
     <div>
-      <h3>{guests.length} guests for event
+      <h3>{bookings.length} guests for event
         <EventDropdown
           event={event}
           handleSelectEvent={handleSelectEvent}
         />
       </h3>
-      <ol className="list-group list-group-numbered gap-1">{bookedGuests}</ol>
+      <ol className="list-group list-group-numbered gap-1">{bookingItems}</ol>
     </div>
   );
 };
