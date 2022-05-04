@@ -52,7 +52,7 @@ const Orders: FC = () => {
 
   useEffect(() => {
     const listenToOrders = () => {
-      const last24Hours = 7 * 24 * 60 * 60 * 1000
+      const last24Hours = 24 * 60 * 60 * 1000
       const timestamp = Timestamp.fromDate(new Date(Date.now() - last24Hours))
       const q = query(collection(db, "orders"), where("Timestamp", ">=", timestamp), orderBy("Timestamp"));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
