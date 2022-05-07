@@ -15,6 +15,7 @@ export interface Order {
     CocktailName: string;
     CustomerID: number;
     CustomerName: string;
+    CustomerLang: string;
     Done: boolean;
     OrderID: string;
     Quantity: number;
