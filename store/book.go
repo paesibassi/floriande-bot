@@ -34,7 +34,7 @@ type Booking struct {
 	EventID int
 }
 
-func NewBooking(eventID int, customerID int64, customerName string) Booking {
+func NewBooking(eventID int, customerID int64, customerName, customerLang string) Booking {
 	t := time.Now()
 	bookingID := fmt.Sprintf("#%d%s", eventID, customerName)
 	return Booking{
@@ -43,13 +43,14 @@ func NewBooking(eventID int, customerID int64, customerName string) Booking {
 		Customer: Customer{
 			CustomerID:   customerID,
 			CustomerName: customerName,
+			CustomerLang: customerLang,
 		},
 		EventID: eventID,
 	}
 }
 
-func AddBooking(client *firestore.Client, eventID int, customerID int64, customerName string) {
-	b := NewBooking(eventID, customerID, customerName)
+func AddBooking(client *firestore.Client, eventID int, customerID int64, customerName, customerLang string) {
+	b := NewBooking(eventID, customerID, customerName, customerLang)
 	ctx := context.Background()
 	_, err := client.
 		Collection("bookings").
