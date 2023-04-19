@@ -7,7 +7,7 @@ type Props = {
 
 const EventDropdown: FC<Props> = (props: Props) => {
   const { event, handleSelectEvent } = props;
-  const events = [20220506, 20220815];
+  const events = [20220506, 20220815, 20230505, 20230519];
   return (
     <div className="dropdown float-end">
       <button
