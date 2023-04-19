@@ -58,7 +58,7 @@ func handleOrderPlainMessage(update *tgbotapi.Update, category string) tgbotapi.
 }
 
 func handleBook(update *tgbotapi.Update, eventID int) tgbotapi.MessageConfig {
-	store.AddBooking(client, eventID, update.Message.From.ID, update.Message.From.FirstName)
+	store.AddBooking(client, eventID, update.Message.From.ID, update.Message.From.FirstName, update.Message.From.LanguageCode)
 	confirm := fmt.Sprintf("%v %s just booked for [%d]", bell, update.Message.From.FirstName, eventID)
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
