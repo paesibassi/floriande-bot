@@ -6,7 +6,6 @@ import {
 } from 'firebase/firestore';
 import { authenticate } from './firestore/db';
 import { Order } from './components/types';
-import { initialOrders } from './firestore/initialorders';
 
 const db = getFirestore();
 const floriandeAPI = process.env.REACT_APP_APIENDPOINT;
