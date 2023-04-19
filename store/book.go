@@ -11,8 +11,8 @@ import (
 )
 
 var Events = map[string]int{
-	"Cocktail party 6 maggio":      20220506,
-	"Festa dell'Assunta 15 Agosto": 20220815,
+	"Federico Birthday May 5h":       20230505,
+	"Spring Cocktail Party May 19th": 20230519,
 }
 
 func NewEventsKeyboard(events map[string]int) tgbotapi.ReplyKeyboardMarkup {
