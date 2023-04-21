@@ -31,7 +31,9 @@ func handleCommands(update *tgbotapi.Update) error {
 		bot.Send(menu)
 		msg.Text = mss[hereTheMenu][userLanguage(update.Message.From.LanguageCode)]
 	case "drink":
-		msg.ReplyMarkup = store.CategoriesKeyboard
+		menu := store.CocktailsMenu(client)
+		categoriesKeyboard, _ := store.NewCocktailKeyboards(menu)
+		msg.ReplyMarkup = categoriesKeyboard
 		msg.Text = fmt.Sprintf(mss[chooseCategory][userLanguage(update.Message.From.LanguageCode)], tropicalDrink)
 	case "orders":
 		orders := store.UserOrders(client, update.Message.From.ID).String()

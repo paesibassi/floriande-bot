@@ -1,7 +1,12 @@
 package store
 
 import (
+	"context"
+	"log"
+
+	"cloud.google.com/go/firestore"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"google.golang.org/api/iterator"
 )
 
 const (
@@ -11,43 +16,27 @@ const (
 
 type Menu map[string][]string
 
-var menu = Menu{
-	// "Entree": {
-	// 	"Caipiroska Fragola",
-	// 	"Caipiroska Mango",
-	// 	"Mojito",
-	// 	"Virgin Mojito",
-	// 	"Spritz Aperol",
-	// 	"Spritz Campari",
-	// },
-	"Fresh&Easy": {
-		"Americano",
-		"Bay Breeze",
-		"Caipiroska Fragola",
-		"Caipiroska Mango",
-		"Cosmopolitan",
-		"Cuba Libre",
-		"Dark & Stormy",
-		"Gin Tonic",
-		"Margarita",
-		"Virgin Margarita",
-		"Mojito",
-		"Virgin Mojito",
-		"Moscow Mule",
-		"Spritz Aperol",
-		"Spritz Campari",
-		"Tequila Sunrise",
-	},
-	"Connoisseur": {
-		"Daiquiri",
-		"Dry Martini",
-		"God Father",
-		"Long Island Ice Tea",
-		"Manhattan",
-		"Negroni",
-		"Old Fashioned",
-		"Sex on the Beach",
-	},
+func CocktailsMenu(client *firestore.Client) Menu {
+	var cocktail Cocktail
+	menu := make(map[string][]string)
+	iter := client.
+		Collection("menu").
+		Documents(context.Background())
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+		err = doc.DataTo(&cocktail)
+		if err != nil {
+			continue
+		}
+		menu[cocktail.CategoryName] = append(menu[cocktail.CategoryName], cocktail.CocktailName)
+	}
+	return menu
 }
 
 func NewMenuList(m Menu) map[string]string {
@@ -59,8 +48,6 @@ func NewMenuList(m Menu) map[string]string {
 	}
 	return drinksMap
 }
-
-var AllCocktails map[string]string = NewMenuList(menu)
 
 func NewCocktailKeyboards(m Menu) (
 	categoriesKeyboard tgbotapi.InlineKeyboardMarkup, cocktailkeyboards MenuKeyboards,
@@ -80,4 +67,4 @@ func NewCocktailKeyboards(m Menu) (
 	return categoriesKeyboard, cocktailkeyboards
 }
 
-var CategoriesKeyboard, CocktailKeyboards = NewCocktailKeyboards(menu)
+// var CategoriesKeyboard, CocktailKeyboards = NewCocktailKeyboards(menu)

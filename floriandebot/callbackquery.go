@@ -47,11 +47,13 @@ func handleCancel(update *tgbotapi.Update) error {
 }
 
 func handleCategorySelection(update *tgbotapi.Update) error {
+	menu := store.CocktailsMenu(client)
+	_, cocktailKeyboards := store.NewCocktailKeyboards(menu)
 	replaceKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,
 		update.CallbackQuery.Message.MessageID,
 		mss[chooseDrinkInCategory][userLanguage(update.CallbackQuery.From.LanguageCode)],
-		store.CocktailKeyboards[update.CallbackQuery.Data],
+		cocktailKeyboards[update.CallbackQuery.Data],
 	)
 	_, err := bot.Request(replaceKeyboard)
 	return err

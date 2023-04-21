@@ -1,0 +1,101 @@
+{
+	"menu": [
+		{
+			"name": "Entree",
+			"cocktails": [
+				{
+					"name": "Caipiroska"
+				},
+				{
+					"name": "Mojito"
+				},
+				{
+					"name": "Spritz"
+				}
+			]
+		},
+		{
+			"name": "Fresh&Easy",
+			"cocktails": [
+				{
+					"name": "Americano"
+				},
+				{
+					"name": "Bay Breeze"
+				},
+				{
+					"name": "Caipiroska Fragola"
+				},
+				{
+					"name": "Caipiroska Mango"
+				},
+				{
+					"name": "Cosmopolitan"
+				},
+				{
+					"name": "Cuba Libre"
+				},
+				{
+					"name": "Dark & Stormy"
+				},
+				{
+					"name": "Gin Tonic"
+				},
+				{
+					"name": "Margarita"
+				},
+				{
+					"name": "Virgin Margarita"
+				},
+				{
+					"name": "Mojito"
+				},
+				{
+					"name": "Virgin Mojito"
+				},
+				{
+					"name": "Moscow Mule"
+				},
+				{
+					"name": "Spritz Aperol"
+				},
+				{
+					"name": "Spritz Campari"
+				},
+				{
+					"name": "Tequila Sunrise"
+				}
+			]
+		},
+		{
+			"name": "Connoisseur",
+			"cocktails": [
+				{
+					"name": "Daiquiri"
+				},
+				{
+					"name": "Dry Martini",
+					"image": "AgACAgIAAxkBAAEgHa1kRAyNuyNuWLcuUNgSTlBoB2CONwACCskxGwfbIUqwCpM1TsY6hwEAAwIAA3MAAy8E"
+				},
+				{
+					"name": "God Father"
+				},
+				{
+					"name": "Long Island Ice Tea"
+				},
+				{
+					"name": "Manhattan"
+				},
+				{
+					"name": "Negroni"
+				},
+				{
+					"name": "Old Fashioned"
+				},
+				{
+					"name": "Sex on the Beach"
+				}
+			]
+		}
+	]
+}
