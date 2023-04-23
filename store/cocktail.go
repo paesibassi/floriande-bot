@@ -1,9 +1,13 @@
 package store
 
 import (
+	"context"
 	"fmt"
 
+	"cloud.google.com/go/firestore"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Category struct {
@@ -19,16 +23,18 @@ func NewCategory(name string) Category {
 }
 
 type Cocktail struct {
-	CocktailName string
-	CocktailCode string
+	CocktailName  string
+	CocktailCode  string
+	CocktailImage string
 	Category
 }
 
-func NewCocktail(name, categoryName string) Cocktail {
+func NewCocktail(name, image, categoryName string) Cocktail {
 	return Cocktail{
-		CocktailName: name,
-		CocktailCode: fmt.Sprintf("2%s", name),
-		Category:     NewCategory(categoryName),
+		CocktailName:  name,
+		CocktailCode:  fmt.Sprintf("2%s", name),
+		CocktailImage: image,
+		Category:      NewCategory(categoryName),
 	}
 }
 
@@ -71,4 +77,34 @@ func newCocktailsKeyboard(cocktails []Cocktail) tgbotapi.InlineKeyboardMarkup {
 		buttons[i] = tgbotapi.NewInlineKeyboardButtonData(d.CocktailName, d.CocktailCode+d.CategoryCode)
 	}
 	return newDrinksKeyboard(buttons)
+}
+
+func CocktailImageFileID(client *firestore.Client, cocktailName string) (*string, error) {
+	cocktailPtr := new(Cocktail)
+	dsnap, err := client.
+		Collection("menu").
+		Doc(cocktailName).
+		Get(context.Background())
+	if err != nil {
+		// if document is not found
+		if status.Code(err) == codes.NotFound {
+			err = fmt.Errorf("cocktail %q not found: %s", cocktailName, err)
+			return nil, err
+		}
+		// fallback in case of a different error
+		err = fmt.Errorf("could not fetch cocktail details: %s", err)
+		return nil, err
+	}
+
+	err = dsnap.DataTo(cocktailPtr)
+	if err != nil {
+		err = fmt.Errorf("could not unmarshal cocktail details: %s", err)
+		return nil, err
+	}
+
+	fileId := cocktailPtr.CocktailImage
+	if fileId == "" {
+		return nil, fmt.Errorf("cocktail %q has no image defined", cocktailName)
+	}
+	return &fileId, nil
 }

@@ -33,6 +33,8 @@ func handlePlainMessage(update *tgbotapi.Update) error {
 		msg = handleBook(update, id)
 	} else if category, ok := allCocktails[update.Message.Text]; ok {
 		msg = handleOrderPlainMessage(update, category)
+	} else if update.Message.Photo != nil {
+		msg = handleReturnFileId(update)
 	} else {
 		msg = handleDontUnderstand(update)
 	}
@@ -67,6 +69,24 @@ func handleBook(update *tgbotapi.Update, eventID int) tgbotapi.MessageConfig {
 	}
 	msgText := mss[bookConfirmation][userLanguage(update.Message.From.LanguageCode)]
 	return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf(msgText, eventID, update.Message.From.FirstName))
+}
+
+func handleReturnFileId(update *tgbotapi.Update) tgbotapi.MessageConfig {
+	msgText := mss[returnFileId][userLanguage(update.Message.From.LanguageCode)]
+	var fileId string
+	var lastImageWidth int
+	for _, f := range update.Message.Photo {
+		if f.Width > lastImageWidth {
+			fileId = f.FileID
+			lastImageWidth = f.Width
+		}
+	}
+	msgText = fmt.Sprintf(msgText, fileId)
+	if update.Message.Caption != "" {
+		msgText += fmt.Sprintf(": '%s'", update.Message.Caption)
+	}
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+	return msg
 }
 
 func handleDontUnderstand(update *tgbotapi.Update) tgbotapi.MessageConfig {

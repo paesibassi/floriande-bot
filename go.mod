@@ -9,4 +9,5 @@ require (
 	github.com/GoogleCloudPlatform/functions-framework-go v1.5.3
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	google.golang.org/api v0.73.0
+	google.golang.org/grpc v1.45.0
 )

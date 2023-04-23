@@ -51,8 +51,8 @@ func BotHandler(w http.ResponseWriter, r *http.Request) {
 		case *floriandebot.PlainMsgInGroupError:
 			log.Println(err.Error())
 		default:
+			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
-			log.Println(err)
 		}
 	}
 }

@@ -31,7 +31,7 @@ type Order struct {
 func NewOrder(customerID int64, customerName, customerLang, drink, category string) Order {
 	t := time.Now()
 	orderID := fmt.Sprintf("#%d%s", t.Unix(), customerName)
-	cocktail := NewCocktail(drink, category)
+	cocktail := NewCocktail(drink, "", category) // FIXME image empty here?
 	return Order{
 		OrderID:   orderID,
 		Timestamp: t,

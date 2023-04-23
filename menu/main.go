@@ -114,7 +114,7 @@ func storeMenuInFirestore(client *firestore.Client, menu *Menu) error {
 	for _, category := range menu.Menu {
 		for _, cocktail := range category.Cocktails {
 			docRef := coll.Doc(cocktail.Name)
-			c := store.NewCocktail(cocktail.Name, category.Name)
+			c := store.NewCocktail(cocktail.Name, cocktail.Image, category.Name)
 			batch.Set(docRef, c)
 		}
 	}
