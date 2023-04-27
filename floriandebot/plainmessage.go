@@ -27,9 +27,11 @@ func handlePlainMessage(update *tgbotapi.Update) error {
 	if update.Message.Chat.Type != "private" {
 		return newPlainMsgInGroupError("ignore plain messages sent in groups")
 	}
+
+	allCocktails := store.NewMenuList(store.CocktailsMenu(client))
 	if id, ok := store.Events[update.Message.Text]; ok {
 		msg = handleBook(update, id)
-	} else if category, ok := store.AllCocktails[update.Message.Text]; ok {
+	} else if category, ok := allCocktails[update.Message.Text]; ok {
 		msg = handleOrderPlainMessage(update, category)
 	} else {
 		msg = handleDontUnderstand(update)
