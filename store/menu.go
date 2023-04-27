@@ -58,7 +58,7 @@ func NewCocktailKeyboards(m Menu) (
 		category := NewCategory(categoryName)
 		cocktails := make([]Cocktail, len(cocktailNames))
 		for i, name := range cocktailNames {
-			cocktails[i] = NewCocktail(name, categoryName)
+			cocktails[i] = NewCocktail(name, "", categoryName) // FIXME image empty here?
 		}
 		categories = append(categories, category)
 		cocktailkeyboards[category.CategoryCode] = newCocktailsKeyboard(cocktails)
@@ -66,5 +66,3 @@ func NewCocktailKeyboards(m Menu) (
 	categoriesKeyboard = newCategoriesKeyboard(categories)
 	return categoriesKeyboard, cocktailkeyboards
 }
-
-// var CategoriesKeyboard, CocktailKeyboards = NewCocktailKeyboards(menu)

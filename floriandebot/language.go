@@ -23,6 +23,7 @@ const (
 	bookConfirmation
 	orderConfirmation
 	youChose
+	returnFileId
 	youCanceled
 	chooseDrinkInCategory
 	orderReady
@@ -60,6 +61,10 @@ Altrimenti, presta attenzione ad inserire correttamente il nome del drink \(incl
 	youChose: {
 		"You selected %s",
 		"Hai scelto %s",
+	},
+	returnFileId: {
+		"This image has the following ID: %s",
+		"Questa immagine ha questo ID: %s",
 	},
 	youCanceled: {
 		"You canceled your order",

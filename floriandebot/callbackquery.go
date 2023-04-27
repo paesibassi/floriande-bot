@@ -68,18 +68,54 @@ func handleOrderCallback(update *tgbotapi.Update) error {
 		drink,
 		category,
 	)
+	// confirm the order to the barman
 	confirm := fmt.Sprintf("%v %s just ordered a %s", bell, update.CallbackQuery.From.FirstName, drink)
 	if _, err := bot.Send(tgbotapi.NewMessage(barmanID, confirm)); err != nil {
 		log.Fatal(err)
 	}
-	removeKeyboard := tgbotapi.NewEditMessageTextAndMarkup(
+
+	// prepare order confirmation message
+	var orderConfirmationMsg tgbotapi.Chattable
+	orderConfirmationText := fmt.Sprintf(mss[orderConfirmation][userLanguage(update.CallbackQuery.From.LanguageCode)], drink, cocktailGlass)
+
+	// check if an image of ordered drink is available
+	orderConfirmationMsg, err := cocktailImageMessage(
+		drink,
 		update.CallbackQuery.Message.Chat.ID,
-		update.CallbackQuery.Message.MessageID,
-		fmt.Sprintf(mss[orderConfirmation][userLanguage(update.CallbackQuery.From.LanguageCode)], drink, cocktailGlass),
-		store.EmptyInlineKeyboard,
+		orderConfirmationText,
 	)
-	_, err := bot.Request(removeKeyboard)
+	if err != nil {
+		err = fmt.Errorf("failed to prepare the cocktail image message: %v", err)
+		log.Println(err)
+		// fallback to textual confirmation message if image is not available
+		orderConfirmationMsg = tgbotapi.NewMessage(
+			update.CallbackQuery.Message.Chat.ID,
+			orderConfirmationText,
+		)
+	}
+	_, err = bot.Request(orderConfirmationMsg)
+	if err != nil {
+		err = fmt.Errorf("failed to send the order confirmation message: %v", err)
+		log.Println(err)
+	}
+
+	// delete the message with the selection keyboard
+	deleteKeyboardMessage := tgbotapi.NewDeleteMessage(
+		update.CallbackQuery.Message.Chat.ID,
+		update.CallbackQuery.Message.MessageID)
+	_, err = bot.Request(deleteKeyboardMessage)
+
 	return err
+}
+
+func cocktailImageMessage(drink string, chatID int64, caption string) (*tgbotapi.PhotoConfig, error) {
+	cocktailImageId, err := store.CocktailImageFileID(client, drink)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve the cocktail image: %s", err)
+	}
+	cocktailImageMsg := tgbotapi.NewPhoto(chatID, tgbotapi.FileID(*cocktailImageId))
+	cocktailImageMsg.Caption = caption
+	return &cocktailImageMsg, nil
 }
 
 // Splits cocktail order callbackdata string like "2Cocktail Name1Category Name"
